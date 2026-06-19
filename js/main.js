@@ -65,9 +65,9 @@ function playKeyClick() {
   noise.onended = () => { noise.disconnect(); noiseGain.disconnect(); };
 }
 
-async function typewriter(container, lines) {
+async function typewriter(container, lines, skipRef = { value: false }) {
   for (const line of lines) {
-    if (line.pause > 0) {
+    if (line.pause > 0 && !skipRef.value) {
       await new Promise(resolve => setTimeout(resolve, line.pause));
     }
 
@@ -83,12 +83,14 @@ async function typewriter(container, lines) {
       glyphEl.textContent = char;
       lineEl.appendChild(glyphEl);
 
-      glyphEl.classList.add('hot');
-      playKeyClick();
-      await new Promise(resolve =>
-        setTimeout(resolve, Math.max(5, line.speed + (Math.random() * 30) - 15))
-      );
-      glyphEl.classList.remove('hot');
+      if (!skipRef.value) {
+        glyphEl.classList.add('hot');
+        playKeyClick();
+        await new Promise(resolve =>
+          setTimeout(resolve, Math.max(5, line.speed + (Math.random() * 30) - 15))
+        );
+        glyphEl.classList.remove('hot');
+      }
     }
 
     container.scrollTop = container.scrollHeight;
@@ -177,10 +179,23 @@ document.addEventListener('DOMContentLoaded', () => {
     gate.classList.add('hidden');
     initAudio();
     terminal.classList.add('active');
+    const skipRef = { value: false };
+    const skip = () => {
+      skipRef.value = true;
+      document.removeEventListener('keydown',    skip);
+      document.removeEventListener('click',      skip);
+      document.removeEventListener('touchstart', skip);
+    };
+    document.addEventListener('keydown',    skip);
+    document.addEventListener('click',      skip);
+    document.addEventListener('touchstart', skip);
     (async () => {
-      await typewriter(output, BOOT_LINES);
+      await typewriter(output, BOOT_LINES, skipRef);
       playSequence(audio1, audio2);
-      await typewriter(output, GREETING_LINES);
+      await typewriter(output, GREETING_LINES, skipRef);
+      document.removeEventListener('keydown',    skip);
+      document.removeEventListener('click',      skip);
+      document.removeEventListener('touchstart', skip);
       menu.classList.remove('hidden');
       new GameMenu(menu, GAMES);
     })();
