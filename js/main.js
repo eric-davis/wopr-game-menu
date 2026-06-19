@@ -166,20 +166,27 @@ class GameMenu {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const gate     = document.getElementById('gate');
   const terminal = document.getElementById('terminal');
   const output   = document.getElementById('output');
   const menu     = document.getElementById('menu');
   const audio1   = document.getElementById('audio-greetings');
   const audio2   = document.getElementById('audio-shall-we-play');
 
-  initAudio();
-  terminal.classList.add('active');
+  const start = () => {
+    gate.classList.add('hidden');
+    initAudio();
+    terminal.classList.add('active');
+    (async () => {
+      await typewriter(output, BOOT_LINES);
+      playSequence(audio1, audio2);
+      await typewriter(output, GREETING_LINES);
+      menu.classList.remove('hidden');
+      new GameMenu(menu, GAMES);
+    })();
+  };
 
-  (async () => {
-    await typewriter(output, BOOT_LINES);
-    playSequence(audio1, audio2);
-    await typewriter(output, GREETING_LINES);
-    menu.classList.remove('hidden');
-    new GameMenu(menu, GAMES);
-  })();
+  document.addEventListener('click',     start, { once: true });
+  document.addEventListener('keydown',   start, { once: true });
+  document.addEventListener('touchstart', start, { once: true });
 });

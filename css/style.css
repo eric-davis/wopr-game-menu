@@ -40,9 +40,9 @@ body::after {
     z-index: 100;
 }
 
-/* ── Splash ───────────────────────────────────────────── */
+/* ── Gate ─────────────────────────────────────────────── */
 
-#splash {
+#gate {
     position: fixed;
     inset: 0;
     display: flex;
@@ -50,30 +50,10 @@ body::after {
     justify-content: center;
     z-index: 50;
     background-color: var(--bg);
-}
-
-.splash-box {
-    border: 1px solid var(--green);
-    padding: 3rem 5rem;
-    text-align: center;
-    text-transform: uppercase;
+    font-size: 1.6rem;
     letter-spacing: 0.2em;
-}
-
-.splash-box p {
-    font-size: 1.4rem;
-    margin-bottom: 1.5rem;
+    text-transform: uppercase;
     text-shadow: var(--glow);
-}
-
-.splash-box p:first-child {
-    font-size: 2rem;
-    color: var(--green-bright);
-    text-shadow: var(--glow-bright);
-}
-
-.splash-box p.blink {
-    animation: blink 1s step-end infinite;
 }
 
 /* ── Terminal ─────────────────────────────────────────── */
@@ -231,10 +211,10 @@ body::after {
 /* ── Reduced motion ───────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-    body            { animation: none; }
-    .cursor         { animation: none; }
-    .splash-box p.blink { animation: none; opacity: 1; }
-    .glyph          { transition: none; }
+    body    { animation: none; }
+    .cursor { animation: none; }
+    .blink  { animation: none; opacity: 1; }
+    .glyph  { transition: none; }
 }
 
 /* ── Touch & Responsive ───────────────────────────────── */
@@ -253,11 +233,9 @@ body {
 }
 
 @media (max-width: 600px) {
-    body          { font-size: 15px; }
-    .terminal     { padding: 1.5rem 1.2rem; }
-    .splash-box   { padding: 2rem 1.5rem; }
-    .splash-box p { font-size: 1rem; }
-    .splash-box p:first-child { font-size: 1.4rem; }
+    body      { font-size: 15px; }
+    .terminal { padding: 1.5rem 1.2rem; }
+    #gate     { font-size: 1rem; }
 }
 
 /* ── Utility ──────────────────────────────────────────── */
