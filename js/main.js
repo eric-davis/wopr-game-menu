@@ -186,7 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   };
 
-  document.addEventListener('click',     start, { once: true });
-  document.addEventListener('keydown',   start, { once: true });
-  document.addEventListener('touchstart', start, { once: true });
+  const startOnce = () => {
+    document.removeEventListener('click',      startOnce);
+    document.removeEventListener('keydown',    startOnce);
+    document.removeEventListener('touchstart', startOnce);
+    start();
+  };
+  document.addEventListener('click',      startOnce);
+  document.addEventListener('keydown',    startOnce);
+  document.addEventListener('touchstart', startOnce);
 });
