@@ -9,8 +9,9 @@ desktop.ini
 *.swp
 *.swo
 
-# Test screenshots
+# Test screenshots (keep screenshot.png for README)
 *.png
+!screenshot.png
 
 # Playwright test output
 .playwright-mcp/

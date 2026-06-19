@@ -10,6 +10,12 @@ A WarGames-themed game directory hosted at https://esdavis.dev/games
 - Per-keystroke Web Audio click sound
 - Keyboard, mouse, and touch navigation
 - Mobile-responsive
+- Auto-starts on page load — no tap/click required to begin
+- Note: Audio may be muted by browser autoplay policy (since there is no longer a user gesture before audio plays)
+
+## Screenshot
+
+![WOPR Game Menu](screenshot.png)
 
 ## File Structure
 
@@ -26,10 +32,16 @@ game-menu/
     └── shall-we-play.mp3
 ```
 
-## Setup
+## Deployment
 
-1. Drop `greetings.mp3` and `shall-we-play.mp3` into `audio/`
-2. Deploy the folder contents to your web server's `/games` path
+The site deploys automatically via GitHub Actions when a GitHub release is published. The release tag is stamped into the `VERSION` constant in `js/main.js` via `sed`.
+
+**Server Path:** `/var/www/esdavis.dev/games`
+
+**Required Secrets:**
+- `DEPLOY_HOST`
+- `DEPLOY_USER`
+- `DEPLOY_KEY`
 
 ## Games
 
