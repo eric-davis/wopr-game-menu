@@ -6,6 +6,101 @@ const GAMES = [
   { label: 'CONNECT 5', url: 'https://esdavis.dev/connect5' },
 ];
 
+const BOOT_LINES = [
+  { text: 'UNITED STATES DEPARTMENT OF DEFENSE',        speed: 40, pause: 0 },
+  { text: 'DARPA JOINT OPERATIONS COMMAND',             speed: 40, pause: 0 },
+  { text: '═'.repeat(46),                               speed: 8,  pause: 100, cls: 'separator' },
+  { text: 'W.O.P.R. — WAR OPERATION PLAN RESPONSE',      speed: 40, pause: 0,   cls: 'bright' },
+  { text: `JOSHUA — STRATEGIC SIMULATION SYSTEM ${VERSION}`, speed: 40, pause: 0,   cls: 'bright' },
+  { text: '═'.repeat(46),                               speed: 8,  pause: 200, cls: 'separator' },
+  { text: '',                                           speed: 0,  pause: 300 },
+  { text: 'SYSTEM STATUS ............... NOMINAL',      speed: 35, pause: 0 },
+  { text: 'SECURITY CLEARANCE .......... RESTRICTED',   speed: 35, pause: 0 },
+  { text: 'AVAILABLE PROGRAMS .......... 3',            speed: 35, pause: 400 },
+  { text: '',                                           speed: 0,  pause: 200 },
+  { text: 'LOADING GAMES LIBRARY...',                   speed: 50, pause: 600 },
+  { text: '',                                           speed: 0,  pause: 200 },
+];
+
+const GREETING_LINES = [
+  { text: 'GREETINGS, PROFESSOR FALKEN.', speed: 60, pause: 0,   cls: 'bright' },
+  { text: '',                             speed: 0,  pause: 400 },
+  { text: 'SHALL WE PLAY A GAME?',        speed: 60, pause: 0,   cls: 'bright' },
+  { text: '',                             speed: 0,  pause: 800 },
+];
+
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) audioCtx = new AudioContext();
+}
+
+function playKeyClick() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  const oscGain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.value = 900 + (Math.random() - 0.5) * 160;
+  osc.connect(oscGain);
+  oscGain.connect(audioCtx.destination);
+  oscGain.gain.setValueAtTime(0.06, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+  osc.start(now);
+  osc.stop(now + 0.022);
+  osc.onended = () => { osc.disconnect(); oscGain.disconnect(); };
+
+  const buf = audioCtx.createBuffer(1, 512, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < 512; i++) data[i] = Math.random() * 2 - 1;
+  const noise = audioCtx.createBufferSource();
+  const noiseGain = audioCtx.createGain();
+  noise.buffer = buf;
+  noise.connect(noiseGain);
+  noiseGain.connect(audioCtx.destination);
+  noiseGain.gain.setValueAtTime(0.04, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
+  noise.start(now);
+  noise.onended = () => { noise.disconnect(); noiseGain.disconnect(); };
+}
+
+async function typewriter(container, lines) {
+  for (const line of lines) {
+    if (line.pause > 0) {
+      await new Promise(resolve => setTimeout(resolve, line.pause));
+    }
+
+    const lineEl = document.createElement('span');
+    lineEl.className = `line ${line.cls || ''}`.trim();
+    container.appendChild(lineEl);
+
+    if (!line.text) continue;
+
+    for (const char of line.text) {
+      const glyphEl = document.createElement('span');
+      glyphEl.className = 'glyph';
+      glyphEl.textContent = char;
+      lineEl.appendChild(glyphEl);
+
+      glyphEl.classList.add('hot');
+      playKeyClick();
+      await new Promise(resolve =>
+        setTimeout(resolve, Math.max(5, line.speed + (Math.random() * 30) - 15))
+      );
+      glyphEl.classList.remove('hot');
+    }
+
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+async function playSequence(clip1El, clip2El) {
+  try { await clip1El.play(); } catch {}
+  await new Promise(resolve => clip1El.addEventListener('ended', resolve, { once: true }));
+  try { await clip2El.play(); } catch {}
+}
+
 class GameMenu {
   constructor(menuEl, games) {
     this.menuEl = menuEl;
@@ -14,7 +109,6 @@ class GameMenu {
 
     const sep = '═'.repeat(46);
     menuEl.innerHTML =
-      `<span class="line bright">JOSHUA — STRATEGIC SIMULATION SYSTEM ${VERSION}</span>` +
       `<span class="menu-separator">${sep}</span>` +
       games.map((g, i) =>
         `<span class="game-item" data-index="${i}">${g.label}</span>`
@@ -72,8 +166,20 @@ class GameMenu {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('terminal').classList.add('active');
-  const menu = document.getElementById('menu');
-  menu.classList.remove('hidden');
-  new GameMenu(menu, GAMES);
+  const terminal = document.getElementById('terminal');
+  const output   = document.getElementById('output');
+  const menu     = document.getElementById('menu');
+  const audio1   = document.getElementById('audio-greetings');
+  const audio2   = document.getElementById('audio-shall-we-play');
+
+  initAudio();
+  terminal.classList.add('active');
+
+  (async () => {
+    await typewriter(output, BOOT_LINES);
+    playSequence(audio1, audio2);
+    await typewriter(output, GREETING_LINES);
+    menu.classList.remove('hidden');
+    new GameMenu(menu, GAMES);
+  })();
 });
