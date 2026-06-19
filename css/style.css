@@ -168,7 +168,7 @@ body::after {
     display: block;
     padding: 0.3rem 0;
     padding-left: 2rem;
-    cursor: none;
+    cursor: pointer;
     white-space: pre;
     text-transform: uppercase;
     letter-spacing: 0.15em;
