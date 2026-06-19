@@ -17,4 +17,6 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             cd /var/www/esdavis.dev/games
+            git checkout js/main.js
             git pull origin main
+            sed -i "s/const VERSION = '[^']*';/const VERSION = '${{ github.event.release.tag_name }}';/" js/main.js
