@@ -1,0 +1,267 @@
+:root {
+    --green: #00FF41;
+    --green-bright: #39FF14;
+    --green-dim: #007A1F;
+    --green-hot: #CCFFCC;
+    --bg: #000000;
+    --font: 'VT323', monospace;
+    --glow: 0 0 8px #00FF41, 0 0 20px #00FF41, 0 0 40px rgba(0,255,65,0.3);
+    --glow-bright: 0 0 10px #39FF14, 0 0 30px #39FF14, 0 0 60px rgba(57,255,20,0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: var(--bg);
+    overflow: hidden;
+    cursor: none;
+}
+
+body {
+    font-family: var(--font);
+    color: var(--green);
+    font-size: 22px;
+    line-height: 1.6;
+    animation: flicker 8s infinite;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* ── Splash ───────────────────────────────────────────── */
+
+#splash {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    background-color: var(--bg);
+}
+
+.splash-box {
+    border: 1px solid var(--green);
+    padding: 3rem 5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.splash-box p {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    text-shadow: var(--glow);
+}
+
+.splash-box p:first-child {
+    font-size: 2rem;
+    color: var(--green-bright);
+    text-shadow: var(--glow-bright);
+}
+
+.splash-box p.blink {
+    animation: blink 1s step-end infinite;
+}
+
+/* ── Terminal ─────────────────────────────────────────── */
+
+.terminal {
+    position: fixed;
+    inset: 0;
+    padding: 3rem 4rem;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+}
+
+.terminal.active {
+    display: block;
+}
+
+/* CRT scanlines — fixed so they don't scroll with content */
+.terminal::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* ── Text lines ───────────────────────────────────────── */
+
+.line {
+    display: block;
+    white-space: pre;
+    color: var(--green);
+    text-shadow: var(--glow);
+}
+
+.line.dim {
+    color: var(--green-dim);
+    text-shadow: none;
+}
+
+.line.bright {
+    color: var(--green-bright);
+    text-shadow: var(--glow-bright);
+}
+
+.line.separator {
+    color: var(--green-dim);
+    text-shadow: none;
+}
+
+.cursor {
+    display: inline-block;
+    color: var(--green-bright);
+    animation: blink 1s step-end infinite;
+}
+
+.glyph {
+    display: inline;
+    transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.glyph.hot {
+    color: var(--green-hot);
+    text-shadow: 0 0 15px #fff, 0 0 30px var(--green-bright);
+}
+
+/* ── Game Menu ────────────────────────────────────────── */
+
+#menu {
+    margin-top: 1.5rem;
+}
+
+.menu.hidden {
+    display: none;
+}
+
+.menu-separator {
+    display: block;
+    color: var(--green-dim);
+    white-space: pre;
+    margin: 0.5rem 0;
+}
+
+.game-item {
+    display: block;
+    padding: 0.3rem 0;
+    padding-left: 2rem;
+    cursor: none;
+    white-space: pre;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transition: color 0.1s ease, text-shadow 0.1s ease;
+    position: relative;
+    color: var(--green);
+}
+
+.game-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    color: var(--green-bright);
+}
+
+.game-item:hover,
+.game-item.active {
+    color: var(--green-bright);
+    text-shadow: var(--glow-bright);
+}
+
+.game-item.active::before {
+    content: '> ';
+}
+
+.menu-prompt {
+    display: block;
+    margin-top: 1rem;
+    color: var(--green);
+    text-shadow: var(--glow);
+}
+
+/* ── Keyframes ────────────────────────────────────────── */
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+@keyframes flicker {
+    0%   { opacity: 1;    }
+    5%   { opacity: 0.97; }
+    10%  { opacity: 1;    }
+    15%  { opacity: 0.98; }
+    25%  { opacity: 1;    }
+    60%  { opacity: 1;    }
+    62%  { opacity: 0.96; }
+    64%  { opacity: 1;    }
+    80%  { opacity: 1;    }
+    82%  { opacity: 0.97; }
+    84%  { opacity: 1;    }
+    100% { opacity: 1;    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Reduced motion ───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    body            { animation: none; }
+    .cursor         { animation: none; }
+    .splash-box p.blink { animation: none; opacity: 1; }
+    .glyph          { transition: none; }
+}
+
+/* ── Touch & Responsive ───────────────────────────────── */
+
+body {
+    touch-action: manipulation;
+}
+
+.terminal {
+    overflow-x: hidden;
+}
+
+.game-item {
+    padding: 0.6rem 0 0.6rem 2rem;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 600px) {
+    body          { font-size: 15px; }
+    .terminal     { padding: 1.5rem 1.2rem; }
+    .splash-box   { padding: 2rem 1.5rem; }
+    .splash-box p { font-size: 1rem; }
+    .splash-box p:first-child { font-size: 1.4rem; }
+}
+
+/* ── Utility ──────────────────────────────────────────── */
+
+.hidden {
+    display: none !important;
+}
