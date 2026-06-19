@@ -1,4 +1,4 @@
-# WOPR Game Menu
+# WarGames WOPR Game Menu
 
 A WarGames-themed game directory hosted at https://esdavis.dev/games
 
