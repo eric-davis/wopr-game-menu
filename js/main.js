@@ -186,9 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.removeEventListener('click',      skip);
       document.removeEventListener('touchstart', skip);
     };
-    document.addEventListener('keydown',    skip);
-    document.addEventListener('click',      skip);
-    document.addEventListener('touchstart', skip);
+    setTimeout(() => {
+      document.addEventListener('keydown',    skip);
+      document.addEventListener('click',      skip);
+      document.addEventListener('touchstart', skip);
+    }, 0);
     (async () => {
       await typewriter(output, BOOT_LINES, skipRef);
       playSequence(audio1, audio2);
