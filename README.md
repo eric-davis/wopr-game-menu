@@ -34,9 +34,13 @@ game-menu/
 
 ## Deployment
 
-The site deploys automatically via GitHub Actions when a GitHub release is published. The release tag is stamped into the `VERSION` constant in `js/main.js` via `sed`.
+Two CI/CD pipelines handle deployments:
+- **Production:** Triggered by a published GitHub release. Deploys to `https://esdavis.dev/games` and stamps the release tag into the `VERSION` constant in `js/main.js` via `sed`.
+- **Test:** Triggered by pushes to `main`. Deploys to `https://test.esdavis.dev/games` and stamps `dev` as the `VERSION`.
 
-**Server Path:** `/var/www/esdavis.dev/games`
+**Server Paths:**
+- Production: `/var/www/esdavis.dev/games`
+- Test: `/var/www/test.esdavis.dev/games`
 
 **Required Secrets:**
 - `DEPLOY_HOST`
