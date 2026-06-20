@@ -175,22 +175,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const audio1   = document.getElementById('audio-greetings');
   const audio2   = document.getElementById('audio-shall-we-play');
 
-  const start = () => {
+  const start = (fromTouch = false) => {
     gate.classList.add('hidden');
     initAudio();
     terminal.classList.add('active');
     const skipRef = { value: false };
-    const skip = () => {
+    let suppressNextClick = fromTouch;
+    const skip = (e) => {
+      if (suppressNextClick && e.type === 'click') {
+        suppressNextClick = false;
+        return;
+      }
       skipRef.value = true;
       document.removeEventListener('keydown',    skip);
       document.removeEventListener('click',      skip);
       document.removeEventListener('touchstart', skip);
     };
-    setTimeout(() => {
-      document.addEventListener('keydown',    skip);
-      document.addEventListener('click',      skip);
-      document.addEventListener('touchstart', skip);
-    }, 0);
+    document.addEventListener('keydown',    skip);
+    document.addEventListener('click',      skip);
+    document.addEventListener('touchstart', skip);
     (async () => {
       await typewriter(output, BOOT_LINES, skipRef);
       playSequence(audio1, audio2);
@@ -203,11 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   };
 
-  const startOnce = () => {
+  const startOnce = (e) => {
     document.removeEventListener('click',      startOnce);
     document.removeEventListener('keydown',    startOnce);
     document.removeEventListener('touchstart', startOnce);
-    start();
+    start(e.type === 'touchstart');
   };
   document.addEventListener('click',      startOnce);
   document.addEventListener('keydown',    startOnce);
